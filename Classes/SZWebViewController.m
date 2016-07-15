@@ -7,8 +7,11 @@
 //
 
 #import "SZWebViewController.h"
+#import "SZWebViewProgressBar.h"
 
 @interface SZWebViewController ()
+
+@property (nonatomic, strong) SZWebViewProgressBar *progressBar;
 
 @property (nonatomic) BOOL previousInteractivePopGestureRecognizerEnabled;
 
@@ -37,6 +40,9 @@
     [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
 
     _progressBar = [[SZWebViewProgressBar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 3)];
+    if (_progressTintColor) {
+        _progressBar.tintColor = _progressTintColor;
+    }
     [self.view addSubview:self.progressBar];
 
     //设置右上角按钮

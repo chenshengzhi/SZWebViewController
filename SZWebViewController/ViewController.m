@@ -17,7 +17,8 @@
 
 - (IBAction)presentButtonTapedHandler:(id)sender {
     SZWebViewController *vc = [[SZWebViewController alloc] init];
-    vc.urlPath = @"www.baidu.com";
+    vc.urlPath = @"https://www.baidu.com";
+    vc.progressTintColor = [UIColor redColor];
     UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:vc];
     [self presentViewController:nav animated:YES completion:nil];
 }
@@ -25,7 +26,7 @@
 
 - (IBAction)pushButtonTapedHandler:(id)sender {
     SZWebViewController *vc = [[SZWebViewController alloc] init];
-    vc.urlPath = @"www.baidu.com";
+    vc.urlPath = @"https://www.baidu.com";
     [self.navigationController pushViewController:vc animated:YES];
 }
 

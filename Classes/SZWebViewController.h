@@ -8,7 +8,6 @@
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
-#import "SZWebViewProgressBar.h"
 
 typedef void(^SZWebViewGoBackConfig)(BOOL canGoBack);
 typedef WKNavigationActionPolicy(^SZWebViewDecidePolicyForNavigationAction)(WKNavigationAction *navigationAction);
@@ -17,7 +16,8 @@ typedef WKNavigationResponsePolicy(^SZWebViewDecidePolicyForNavigationResponse)(
 @interface SZWebViewController : UIViewController <WKNavigationDelegate, WKUIDelegate>
 
 @property (nonatomic, strong, readonly) WKWebView *webView;
-@property (nonatomic, strong, readonly) SZWebViewProgressBar *progressBar;
+
+@property (nonatomic, strong) UIColor *progressTintColor;
 
 @property (nonatomic, strong) NSString *urlPath;
 
