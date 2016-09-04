@@ -114,7 +114,7 @@
     }
 
     if (_configForGoBackBlock) {
-        _configForGoBackBlock([self.webView canGoBack]);
+        _configForGoBackBlock(self, [self.webView canGoBack]);
     } else {
         if ([self.webView canGoBack]) {
             self.navigationController.interactivePopGestureRecognizer.enabled = NO;
