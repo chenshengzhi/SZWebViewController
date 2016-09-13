@@ -11,6 +11,8 @@
 
 @interface SZWebViewController ()
 
+@property (nonatomic, strong) WKWebView *webView;
+
 @property (nonatomic, strong) SZWebViewProgressBar *progressBar;
 
 @property (nonatomic) BOOL previousInteractivePopGestureRecognizerEnabled;
@@ -32,16 +34,16 @@
 
     self.view.backgroundColor = [UIColor whiteColor];
 
-    _webView = [[WKWebView alloc] initWithFrame:self.view.bounds];
-    _webView.navigationDelegate = self;
-    _webView.UIDelegate = self;
-    _webView.allowsBackForwardNavigationGestures = YES;
-    [self.view addSubview:_webView];
-    [_webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
+    self.webView = [[WKWebView alloc] initWithFrame:self.view.bounds];
+    self.webView.navigationDelegate = self;
+    self.webView.UIDelegate = self;
+    self.webView.allowsBackForwardNavigationGestures = YES;
+    [self.view addSubview:self.webView];
+    [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
 
-    _progressBar = [[SZWebViewProgressBar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 3)];
+    self.progressBar = [[SZWebViewProgressBar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 3)];
     if (_progressTintColor) {
-        _progressBar.tintColor = _progressTintColor;
+        self.progressBar.tintColor = _progressTintColor;
     }
     [self.view addSubview:self.progressBar];
 
@@ -51,29 +53,34 @@
                                                                              target:self
                                                                              action:@selector(closeWebView)];
 
-    _previousInteractivePopGestureRecognizerEnabled = self.navigationController.interactivePopGestureRecognizer.enabled;
+    self.previousInteractivePopGestureRecognizerEnabled = self.navigationController.interactivePopGestureRecognizer.enabled;
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
 
-    if (![[_urlPath lowercaseString] hasPrefix:@"http://"] && ![[_urlPath lowercaseString] hasPrefix:@"https://"]) {
-        _urlPath = [NSString stringWithFormat:@"http://%@",_urlPath];
+    if (self.urlPath.length > 0) {
+        if (![[_urlPath lowercaseString] hasPrefix:@"http://"]
+            && ![[_urlPath lowercaseString] hasPrefix:@"https://"]) {
+            _urlPath = [NSString stringWithFormat:@"http://%@",_urlPath];
+        }
+        _urlPath = [_urlPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_urlPath]]];
+    } else {
+        [self.webView loadHTMLString:self.html baseURL:[NSURL URLWithString:self.htmlBaseUrlPath]];
     }
-    _urlPath = [_urlPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    [_webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_urlPath]]];
 }
 
 - (void)dealloc {
     [self.webView removeObserver:self forKeyPath:@"estimatedProgress"];
-    [_webView stopLoading];
+    [self.webView stopLoading];
 }
 
 - (void)viewDidLayoutSubviews {
     [super viewDidLayoutSubviews];
 
-    _webView.frame = self.view.bounds;
-    _progressBar.frame = CGRectMake(0, self.topLayoutGuide.length, self.view.frame.size.width, 3);
+    self.webView.frame = self.view.bounds;
+    self.progressBar.frame = CGRectMake(0, self.topLayoutGuide.length, self.view.frame.size.width, 3);
 }
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
@@ -90,16 +97,16 @@
 #pragma mark - WKNavigationDelegate -
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
     WKNavigationActionPolicy policy = WKNavigationActionPolicyAllow;
-    if (_decideActionBlock) {
-        policy = _decideActionBlock(navigationAction);
+    if (self.decideActionBlock) {
+        policy = self.decideActionBlock(navigationAction);
     }
     decisionHandler(policy);
 }
 
 - (void)webView:(WKWebView *)webView decidePolicyForNavigationResponse:(WKNavigationResponse *)navigationResponse decisionHandler:(void (^)(WKNavigationResponsePolicy))decisionHandler {
     WKNavigationResponsePolicy policy = WKNavigationResponsePolicyAllow;
-    if (_decideActionBlock) {
-        policy = _decideResponseBlock(navigationResponse);
+    if (self.decideActionBlock) {
+        policy = self.decideResponseBlock(navigationResponse);
     }
     decisionHandler(policy);
 }
@@ -113,13 +120,13 @@
         }];
     }
 
-    if (_configForGoBackBlock) {
-        _configForGoBackBlock([self.webView canGoBack]);
+    if (self.configForGoBackBlock) {
+        self.configForGoBackBlock([self.webView canGoBack]);
     } else {
         if ([self.webView canGoBack]) {
             self.navigationController.interactivePopGestureRecognizer.enabled = NO;
         } else {
-            self.navigationController.interactivePopGestureRecognizer.enabled = _previousInteractivePopGestureRecognizerEnabled;
+            self.navigationController.interactivePopGestureRecognizer.enabled = self.previousInteractivePopGestureRecognizerEnabled;
         }
     }
 }

@@ -21,6 +21,9 @@ typedef WKNavigationResponsePolicy(^SZWebViewDecidePolicyForNavigationResponse)(
 
 @property (nonatomic, strong) NSString *urlPath;
 
+@property (nonatomic, strong) NSString *html;
+@property (nonatomic, strong) NSString *htmlBaseUrlPath;
+
 //default: YES
 @property (nonatomic) BOOL showHtmlTitle;
 
