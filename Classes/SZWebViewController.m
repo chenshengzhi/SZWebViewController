@@ -24,7 +24,7 @@
 - (instancetype)init {
     self = [super init];
     if (self) {
-        _showHtmlTitle = YES;
+        self.showHtmlTitle = YES;
     }
     return self;
 }
@@ -42,8 +42,8 @@
     [self.webView addObserver:self forKeyPath:@"estimatedProgress" options:NSKeyValueObservingOptionNew context:NULL];
 
     self.progressBar = [[SZWebViewProgressBar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 3)];
-    if (_progressTintColor) {
-        self.progressBar.tintColor = _progressTintColor;
+    if (self.progressTintColor) {
+        self.progressBar.tintColor = self.progressTintColor;
     }
     [self.view addSubview:self.progressBar];
 
@@ -60,12 +60,12 @@
     [super viewDidAppear:animated];
 
     if (self.urlPath.length > 0) {
-        if (![[_urlPath lowercaseString] hasPrefix:@"http://"]
-            && ![[_urlPath lowercaseString] hasPrefix:@"https://"]) {
-            _urlPath = [NSString stringWithFormat:@"http://%@",_urlPath];
+        if (![[self.urlPath lowercaseString] hasPrefix:@"http://"]
+            && ![[self.urlPath lowercaseString] hasPrefix:@"https://"]) {
+            self.urlPath = [NSString stringWithFormat:@"http://%@",self.urlPath];
         }
-        _urlPath = [_urlPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:_urlPath]]];
+        self.urlPath = [self.urlPath stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        [self.webView loadRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:self.urlPath]]];
     } else {
         [self.webView loadHTMLString:self.html baseURL:[NSURL URLWithString:self.htmlBaseUrlPath]];
     }
@@ -121,7 +121,7 @@
     }
 
     if (self.configForGoBackBlock) {
-        self.configForGoBackBlock([self.webView canGoBack]);
+        self.configForGoBackBlock(self, [self.webView canGoBack]);
     } else {
         if ([self.webView canGoBack]) {
             self.navigationController.interactivePopGestureRecognizer.enabled = NO;
