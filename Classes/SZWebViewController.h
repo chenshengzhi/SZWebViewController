@@ -8,8 +8,9 @@
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
+@class SZWebViewController;
 
-typedef void(^SZWebViewGoBackConfig)(BOOL canGoBack);
+typedef void(^SZWebViewGoBackConfig)(SZWebViewController *webViewController, BOOL canGoBack);
 typedef WKNavigationActionPolicy(^SZWebViewDecidePolicyForNavigationAction)(WKNavigationAction *navigationAction);
 typedef WKNavigationResponsePolicy(^SZWebViewDecidePolicyForNavigationResponse)(WKNavigationResponse *navigationResponse);
 
